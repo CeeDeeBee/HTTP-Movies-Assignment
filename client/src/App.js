@@ -22,6 +22,10 @@ const App = () => {
 		setSavedList([...savedList, movie]);
 	};
 
+	const removeMovie = id => {
+		setMovieList(movieList.filter(movie => movie.id !== id));
+	};
+
 	useEffect(() => {
 		getMovieList();
 	}, []);
@@ -35,7 +39,7 @@ const App = () => {
 			</Route>
 
 			<Route path="/movies/:id">
-				<Movie addToSavedList={addToSavedList} />
+				<Movie addToSavedList={addToSavedList} removeMovie={removeMovie} />
 			</Route>
 
 			<Route path="/update-movie/:id">
