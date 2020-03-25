@@ -1,42 +1,58 @@
 import React, { useState, useEffect } from "react";
-import { Route } from "react-router-dom";
+import { Route, Link } from "react-router-dom";
+import axios from "axios";
+
 import SavedList from "./Movies/SavedList";
 import MovieList from "./Movies/MovieList";
 import Movie from "./Movies/Movie";
-import axios from 'axios';
+import UpdateMovie from "./Movies/UpdateMovie";
+import AddMovie from "./Movies/AddMovie";
 
 const App = () => {
-  const [savedList, setSavedList] = useState([]);
-  const [movieList, setMovieList] = useState([]);
+	const [savedList, setSavedList] = useState([]);
+	const [movieList, setMovieList] = useState([]);
 
-  const getMovieList = () => {
-    axios
-      .get("http://localhost:5000/api/movies")
-      .then(res => setMovieList(res.data))
-      .catch(err => console.log(err.response));
-  };
+	const getMovieList = () => {
+		axios
+			.get("http://localhost:5000/api/movies")
+			.then(res => setMovieList(res.data))
+			.catch(err => console.log(err.response));
+	};
 
-  const addToSavedList = movie => {
-    setSavedList([...savedList, movie]);
-  };
+	const addToSavedList = movie => {
+		setSavedList([...savedList, movie]);
+	};
 
-  useEffect(() => {
-    getMovieList();
-  }, []);
+	const removeMovie = id => {
+		setMovieList(movieList.filter(movie => movie.id !== id));
+	};
 
-  return (
-    <>
-      <SavedList list={savedList} />
+	useEffect(() => {
+		getMovieList();
+	}, []);
 
-      <Route exact path="/">
-        <MovieList movies={movieList} />
-      </Route>
+	return (
+		<>
+			<SavedList list={savedList} />
 
-      <Route path="/movies/:id">
-        <Movie addToSavedList={addToSavedList} />
-      </Route>
-    </>
-  );
+			<Route exact path="/">
+				<Link to="/add-movie">Add Movie</Link>
+				<MovieList movies={movieList} />
+			</Route>
+
+			<Route path="/movies/:id">
+				<Movie addToSavedList={addToSavedList} removeMovie={removeMovie} />
+			</Route>
+
+			<Route path="/update-movie/:id">
+				<UpdateMovie movies={movieList} setMovieList={setMovieList} />
+			</Route>
+
+			<Route path="/add-movie">
+				<AddMovie setMovieList={setMovieList} />
+			</Route>
+		</>
+	);
 };
 
 export default App;
